@@ -1,11 +1,12 @@
 import React from "react";
-import Login from "./components/Login"; // Adjust the path as needed
+import { Outlet } from "react-router-dom";
 
 const App: React.FC = () => {
+  //TODO: conditional rendering
   return (
-    <div>
-      <Login />
-    </div>
+    <>
+      <Outlet />
+    </>
   );
 };
 
