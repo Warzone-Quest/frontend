@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 
 interface LoginForm {
@@ -62,7 +63,7 @@ const Login: React.FC = () => {
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <Button variant={"outline"} type="submit">asdjffkdk</Button>
       </form>
     </div>
   );
