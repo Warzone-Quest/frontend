@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router';
-import { AdminView } from './AdminView';
-import { ModeratorView } from './ModeratorView';
+import AdminView from './AdminView';
+import ModeratorView from './ModeratorView';
 import { useState } from 'react';
 import { UserRole } from './types';
 

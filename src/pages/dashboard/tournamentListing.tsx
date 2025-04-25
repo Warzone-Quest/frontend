@@ -1,17 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TournamentCard } from '@/pages/dashboard/tournamentCard';
-
-interface Tournament {
-  id: string;
-  title: string;
-  description: string;
-  participants: number;
-  maxParticipants: number;
-  dueDate: string;
-  points: number;
-  image?: string;
-  teamImages?: string[];
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { fetchTournaments } from '@/store/slices/tournamentSlice';
+import { Loading } from '@/components/ui/Loading';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
+import { useToast } from '@/components/ui/Toast';
+import { Tournament, TournamentStatus } from '@/types/tournament';
 
 type FilterType = 'all' | 'live' | 'upcoming' | 'participated' | 'completed';
 
@@ -23,101 +18,117 @@ const filterOptions = [
   { id: 'completed', label: 'Completed' },
 ] as const;
 
-export default function TournamentListing() {
-  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+const mapTournamentToCardProps = (tournament: Tournament) => ({
+  id: tournament.tournamentId,
+  title: tournament.tournamentName,
+  description: tournament.description,
+  participants: tournament.currentParticipantCount ?? 0,
+  maxParticipants: tournament.maxParticipantCount,
+  dueDate: tournament.startTime ?? tournament.updatedAt,
+  points: tournament.prizePool ?? 0,
+  image: tournament.bannerImage ?? "/tournament-banner.jpg",
+  teamImages: tournament.teamImages ?? [],
+  status: tournament.status,
+});
 
-  const tournaments: Tournament[] = [
-    {
-      id: "1",
-      title: "Winter 2025 Tournament",
-      description: "Compete with your friends in this winter season themed championship.",
-      participants: 19,
-      maxParticipants: 24,
-      dueDate: "2025-01-18T15:00:00",
-      points: 12500,
-      image: "https://images.unsplash.com/photo-1737365506116-ef7eba797492?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teamImages: [
-        "/avatar-1.jpg",
-        "/avatar-2.jpg",
-        "/avatar-3.jpg",
-        "/avatar-4.jpg",
-      ]
-    },
-    {
-      id: "2",
-      title: "Spring Championship",
-      description: "Join the most anticipated spring gaming event of the year.",
-      participants: 15,
-      maxParticipants: 32,
-      dueDate: "2025-04-01T14:30:00",
-      points: 15000,
-      image: "https://images.unsplash.com/photo-1737365506116-ef7eba797492?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teamImages: [
-        "/avatar-5.jpg",
-        "/avatar-6.jpg",
-      ]
-    },
-    {
-      id: "3",
-      title: "Summer League Finals",
-      description: "The ultimate summer showdown. Show your skills and claim victory.",
-      participants: 28,
-      maxParticipants: 32,
-      dueDate: "2025-07-15T18:00:00",
-      points: 20000,
-      image: "https://images.unsplash.com/photo-1737365506116-ef7eba797492?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teamImages: [
-        "/avatar-7.jpg",
-        "/avatar-8.jpg",
-        "/avatar-9.jpg",
-      ]
-    },
-    {
-      id: "4",
-      title: "Fall Cup Challenge",
-      description: "Autumn's premier gaming tournament with exclusive rewards.",
-      participants: 12,
-      maxParticipants: 24,
-      dueDate: "2025-10-05T16:00:00",
-      points: 18000,
-      image: "https://images.unsplash.com/photo-1737365506116-ef7eba797492?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      teamImages: [
-        "/avatar-10.jpg",
-        "/avatar-11.jpg",
-      ]
+export default function TournamentListing() {
+  const dispatch = useDispatch();
+  const { addToast } = useToast();
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const tournaments = useSelector((state: RootState) => state.tournament.tournaments);
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  useEffect(() => {
+    const loadTournaments = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        await dispatch(fetchTournaments() as any);
+      } catch (err) {
+        setError('Failed to load tournaments');
+        addToast('Failed to load tournaments', 'error');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadTournaments();
+  }, [dispatch, addToast]);
+
+  const filteredTournaments = tournaments.filter((tournament: Tournament) => {
+    switch (activeFilter) {
+      case 'live':
+        return tournament.status === TournamentStatus.IN_PROGRESS;
+      case 'upcoming':
+        return tournament.status === TournamentStatus.LISTED;
+      case 'completed':
+        return tournament.status === TournamentStatus.COMPLETED;
+      case 'participated':
+        return tournament.participants?.includes(user?.userId ?? '') ?? false;
+      default:
+        return true;
     }
-  ];
+  });
+
+  if (isLoading) {
+    return <Loading variant="fullscreen" text="Loading tournaments..." />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-500">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-blue-500/20 text-blue-400 rounded-xl hover:bg-blue-500/30 transition-all duration-200"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8">
-      {/* Filters */}
-      <div>
-        <div className="flex flex-wrap gap-2">
-          {filterOptions.map((filter) => (
-            <button
-              key={filter.id}
-              onClick={() => setActiveFilter(filter.id as FilterType)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
-                ${activeFilter === filter.id
-                  ? 'bg-blue-500/50 text-white shadow-lg shadow-blue-400/60'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-600/90'
-                }`}
-            >
-              {filter.label}
-            </button>
-          ))}
+    <ErrorBoundary>
+      <div className="space-y-8">
+        {/* Filters */}
+        <div>
+          <div className="flex flex-wrap gap-2">
+            {filterOptions.map((filter) => (
+              <button
+                key={filter.id}
+                onClick={() => setActiveFilter(filter.id as FilterType)}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200
+                  ${activeFilter === filter.id
+                    ? 'bg-blue-500/50 text-white shadow-lg shadow-blue-400/60'
+                    : 'text-slate-300 hover:text-white hover:bg-slate-600/90'
+                  }`}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Tournament Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {tournaments.map((tournament) => (
-          <TournamentCard
-            key={tournament.id}
-            {...tournament}
-          />
-        ))}
+        {/* Tournament Grid */}
+        {filteredTournaments.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-slate-400">No tournaments found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {filteredTournaments.map((tournament: Tournament) => (
+              <TournamentCard
+                key={tournament.tournamentId}
+                {...mapTournamentToCardProps(tournament)}
+              />
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }

@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
   TrophyIcon,
   ClockIcon,
   WindowIcon
 } from '@heroicons/react/24/outline';
+import { TournamentStatus } from '@/types/tournament';
 
 interface TournamentCardProps {
   id: string;
@@ -15,9 +17,11 @@ interface TournamentCardProps {
   points: number;
   image?: string;
   teamImages?: string[];
+  status?: TournamentStatus;
 }
 
 export function TournamentCard({
+  id,
   title,
   description,
   participants,
@@ -26,7 +30,42 @@ export function TournamentCard({
   points = 12500,
   image = "/tournament-banner.jpg",
   teamImages = [],
+  status
 }: TournamentCardProps) {
+  const navigate = useNavigate();
+
+  const handleJoinClick = () => {
+    navigate(`/tournament/${id}`);
+  };
+
+  const getStatusBadge = () => {
+    switch (status) {
+      case TournamentStatus.IN_PROGRESS:
+        return (
+          <div className="absolute top-2 left-2 bg-green-500/70 backdrop-blur-sm rounded-lg px-3 py-1.5 flex items-center space-x-2">
+            <ClockIcon className="w-4 h-4 text-white" />
+            <span className="text-sm font-medium text-white">Live</span>
+          </div>
+        );
+      case TournamentStatus.LISTED:
+        return (
+          <div className="absolute top-2 left-2 bg-blue-500/70 backdrop-blur-sm rounded-lg px-3 py-1.5 flex items-center space-x-2">
+            <ClockIcon className="w-4 h-4 text-white" />
+            <span className="text-sm font-medium text-white">Upcoming</span>
+          </div>
+        );
+      case TournamentStatus.COMPLETED:
+        return (
+          <div className="absolute top-2 left-2 bg-slate-500/70 backdrop-blur-sm rounded-lg px-3 py-1.5 flex items-center space-x-2">
+            <TrophyIcon className="w-4 h-4 text-white" />
+            <span className="text-sm font-medium text-white">Completed</span>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <motion.div
       whileHover={{ y: -5 }}
@@ -39,11 +78,8 @@ export function TournamentCard({
           alt={title}
           className="w-full h-full object-cover"
         />
-        {/* Overlay with time */}
-        <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-sm rounded-lg px-3 py-1.5 flex items-center space-x-2">
-          <ClockIcon className="w-4 h-4 text-white" />
-          <span className="text-sm font-medium text-white">07:45:24</span>
-        </div>
+        {/* Status Badge */}
+        {getStatusBadge()}
         {/* Game Type */}
         <div className="absolute top-2 right-2 flex items-center space-x-2">
           <WindowIcon className="w-5 h-5 text-white" />
@@ -77,8 +113,11 @@ export function TournamentCard({
             <TrophyIcon className="w-4 h-4" />
             <span className="font-bold">{points.toLocaleString()} pts</span>
           </div>
-          <button className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6 py-1.5 text-sm font-medium transition-colors">
-            Join Tournament
+          <button 
+            onClick={handleJoinClick}
+            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full px-6 py-1.5 text-sm font-medium transition-colors"
+          >
+            {status === TournamentStatus.IN_PROGRESS ? 'View' : 'Join Tournament'}
           </button>
         </div>
 
