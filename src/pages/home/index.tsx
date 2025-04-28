@@ -4,8 +4,9 @@ import {
   CheckCircleIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline';
-import { Header } from '../../components/Header';
-import { Footer } from '../../components/Footer';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+import { Link } from 'react-router';
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -64,14 +65,16 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.5, ease: "easeOut" }}
           >
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2"
-            >
-              Start Your Journey
-              <ArrowRightIcon className="w-5 h-5" />
-            </motion.button>
+            <Link to="/auth/signup">
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-blue-500/30 flex items-center justify-center gap-2"
+              >
+                Start Your Journey
+                <ArrowRightIcon className="w-5 h-5" />
+              </motion.button>
+            </Link>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -252,7 +255,9 @@ export default function Home() {
                       : 'bg-gray-700 hover:bg-gray-600'
                   }`}
                 >
-                  Get Started
+                  <Link to="/auth/signup">
+                    Get Started
+                  </Link>
                 </motion.button>
               </motion.div>
             ))}
@@ -278,14 +283,16 @@ export default function Home() {
             <p className="text-xl text-gray-400 mb-8">
               Join thousands of tournament organizers who trust our platform.
             </p>
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-blue-500/30 inline-flex items-center gap-2"
-            >
-              Create Your First Tournament
-              <ArrowRightIcon className="w-5 h-5" />
-            </motion.button>
+            <Link to="/auth/signup">
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-blue-500/30 inline-flex items-center gap-2"
+              >
+                Create Your First Tournament
+                <ArrowRightIcon className="w-5 h-5" />
+              </motion.button>
+            </Link>
           </motion.div>
         </div>
       </section>

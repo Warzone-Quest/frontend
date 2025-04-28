@@ -1,16 +1,17 @@
 import { Navigate, Route, Routes } from 'react-router';
-import AdminView from './AdminView';
-import ModeratorView from './ModeratorView';
-import { useState } from 'react';
-import { UserRole } from './types';
+import { AdminView } from './AdminView';
+import { ModeratorView } from './ModeratorView';
+import { useEffect, useState } from 'react';
+import { userApi, UserProfileModel } from "@/api/user.api";
+import { TournamentModel } from "@/api/tournament.api";
 
 export const ControlPanel = () => {
-  // TODO: Replace with actual auth logic
-  const [userRole] = useState<UserRole>('admin');
+  const [user, setUser] = useState<UserProfileModel>();
+  const [tournament, setTournament] = useState<TournamentModel>();
 
   // Redirect to appropriate view based on role
   const getRoleBasedView = () => {
-    switch (userRole) {
+    switch (user) {
       case 'admin':
         return <AdminView />;
       case 'moderator':
@@ -19,6 +20,13 @@ export const ControlPanel = () => {
         return <Navigate to="/dashboard" replace />;
     }
   };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await userApi.fetchProfile();
+      setUser(user);
+    };
+  }, []);
 
   return (
     <Routes>

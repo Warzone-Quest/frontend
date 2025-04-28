@@ -1,13 +1,17 @@
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
 
 interface VideoStreamProps {
   stream: MediaStream | null;
-  muted?: boolean;
-  className?: string;
+  isLocal?: boolean;
+  streamId?: string;
 }
 
-export const VideoStream = ({ stream, muted = false, className = '' }: VideoStreamProps) => {
+const VideoStream: React.FC<VideoStreamProps> = ({ stream, isLocal = false, streamId }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { streams } = useSelector((state: RootState) => state.webrtc);
+  const streamState = streamId ? streams.find(s => s.id === streamId) : null;
 
   useEffect(() => {
     if (videoRef.current && stream) {
@@ -16,20 +20,21 @@ export const VideoStream = ({ stream, muted = false, className = '' }: VideoStre
   }, [stream]);
 
   return (
-    <div className={`relative ${className}`}>
+    <div className="relative w-full h-full">
       <video
         ref={videoRef}
         autoPlay
         playsInline
-        muted
-        className="w-full h-full object-cover rounded-lg"
-        data-testid="video-stream"
+        muted={isLocal || streamState?.isMuted}
+        className={`w-full h-full object-cover ${isLocal ? 'scale-x-[-1]' : ''}`}
       />
-      {!stream && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 rounded-lg">
-          <div className="text-white">No stream available</div>
+      {streamState?.isVideoOff && isLocal && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <p className="text-white text-lg">Video Off</p>
         </div>
       )}
     </div>
   );
-}; 
+};
+
+export default VideoStream; 

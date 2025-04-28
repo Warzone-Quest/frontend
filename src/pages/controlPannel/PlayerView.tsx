@@ -1,38 +1,53 @@
-import { useWebRTC } from '@/webrtc/useWebRTC';
-import { VideoStream } from '@/components/VideoStream';
-import { ConnectionStatus } from '@/components/ConnectionStatus';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { WebRTCConnection } from '../../components/WebRTCConnection';
+import VideoStream from '../../components/VideoStream';
+import { ConnectionStatus } from '../../components/ConnectionStatus';
+import { setCurrentTournament, setCurrentUser } from '../../store/slices/webrtc/webrtc.slice';
+import { useEffect } from 'react';
 
 export const PlayerView = () => {
-  const { state } = useWebRTC({
-    role: 'player',
-    userId: 'player1',
-    signalingServerUrl: '/api/signaling',
-    mediaConstraints: {
-      video: true,
-      audio: true
+  const dispatch = useDispatch();
+  const { currentTournamentId, currentUserId, connectionStatus } = useSelector((state: RootState) => state.webrtc);
+
+  // Initialize player connection
+  useEffect(() => {
+    dispatch(setCurrentTournament('current-tournament-id')); // Replace with actual tournament ID
+    dispatch(setCurrentUser('player1')); // Replace with actual player ID
+  }, [dispatch]);
+
+  const getConnectionState = (): RTCPeerConnectionState => {
+    switch (connectionStatus) {
+      case 'connected':
+        return 'connected';
+      case 'connecting':
+        return 'connecting';
+      case 'disconnected':
+        return 'disconnected';
+      case 'error':
+        return 'failed';
+      default:
+        return 'disconnected';
     }
-  });
+  };
 
   return (
     <div className="p-4">
       <div className="mb-4">
         <h2 className="text-xl font-bold mb-2">Player View</h2>
         <ConnectionStatus
-          iceState={state.iceConnectionState}
-          connectionState={state.connectionState}
+          iceState={connectionStatus === 'connected' ? 'connected' : 'disconnected'}
+          connectionState={getConnectionState()}
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-gray-800 rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-2">Your Stream</h3>
-          <VideoStream stream={state.localStream} muted className="h-64" />
-        </div>
-        <div className="bg-gray-800 rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-2">Remote Stream</h3>
-          <VideoStream stream={state.remoteStream} className="h-64" />
-        </div>
-      </div>
+      {currentTournamentId && currentUserId && (
+        <WebRTCConnection
+          tournamentId={currentTournamentId}
+          userId={currentUserId}
+          isProducer={false}
+        />
+      )}
     </div>
   );
 }; 

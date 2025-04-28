@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { 
   EnvelopeIcon, 
   LockClosedIcon, 
@@ -9,11 +9,12 @@ import {
   UserIcon,
   UserCircleIcon
 } from '@heroicons/react/24/outline';
+import { authApi } from '@/api/auth.api';
 
 export const SignUp = () => {
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
+    userEmailId: '',
     password: '',
     confirmPassword: ''
   });
@@ -21,6 +22,7 @@ export const SignUp = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,8 +43,12 @@ export const SignUp = () => {
 
     setIsLoading(true);
     try {
-      // TODO: Implement signup logic
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+      const response = await authApi.signup(formData);
+      if (response) {
+        navigate('/auth/login');
+      } else {
+        setError('Failed to create account. Please try again.');
+      }
     } catch (err) {
       setError('Failed to create account. Please try again.');
     } finally {
@@ -99,7 +105,7 @@ export const SignUp = () => {
 
             {/* Email Input */}
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-white/90">
+              <label htmlFor="userEmailId" className="text-sm font-medium text-white/90">
                 Email Address
               </label>
               <div className="relative group">
@@ -107,12 +113,12 @@ export const SignUp = () => {
                   <EnvelopeIcon className="h-5 w-5 text-white" />
                 </div>
                 <input
-                  id="email"
-                  name="email"
+                  id="userEmailId"
+                  name="userEmailId"
                   type="email"
                   autoComplete="email"
                   required
-                  value={formData.email}
+                  value={formData.userEmailId}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-transparent transition-all"
                   placeholder="Enter your email"
@@ -248,4 +254,4 @@ export const SignUp = () => {
       </div>
     </div>
   );
-}; 
+};

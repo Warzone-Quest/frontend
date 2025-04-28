@@ -17,7 +17,7 @@ const navigation = [
 
 const secondaryNavigation = [
   { name: "Settings", to: "/dashboard/settings", icon: Cog6ToothIcon },
-  { name: "Logout", to: "/logout", icon: ArrowRightStartOnRectangleIcon },
+  { name: "Logout", to: "/auth/logout", icon: ArrowRightStartOnRectangleIcon },
 ];
 
 export function DashboardSidebar() {
@@ -37,7 +37,7 @@ export function DashboardSidebar() {
               <TrophyIcon className="w-6 h-6 text-white" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-              TourneyPro
+              WarZone Quest
             </span>
           </Link>
         </div>

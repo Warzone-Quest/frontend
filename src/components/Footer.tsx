@@ -27,28 +27,28 @@ export const Footer = () => {
     {
       title: 'Gaming',
       items: [
-        { name: 'Tournaments', icon: TrophyIcon, to: '/tournaments' },
-        { name: 'Leaderboards', icon: ChartBarIcon, to: '/leaderboards' },
-        { name: 'Teams', icon: UserGroupIcon, to: '/teams' },
-        { name: 'Events', icon: RocketLaunchIcon, to: '/events' }
+        { name: 'Tournaments', icon: TrophyIcon, to: '/dashboard/tournaments' },
+        { name: 'Leaderboards', icon: ChartBarIcon, to: '/dashboard/leaderboards' },
+        { name: 'Teams', icon: UserGroupIcon, to: '/dashboard/teams' },
+        { name: 'Events', icon: RocketLaunchIcon, to: '/dashboard/events' }
       ]
     },
     {
       title: 'Community',
       items: [
-        { name: 'Discord', icon: ChatBubbleLeftIcon, to: '/discord' },
-        { name: 'Forums', icon: EnvelopeIcon, to: '/forums' },
-        { name: 'Blog', icon: CodeBracketIcon, to: '/blog' },
-        { name: 'Support', icon: ShieldCheckIcon, to: '/support' }
+        { name: 'Discord', icon: ChatBubbleLeftIcon, to: '/coming-soon' },
+        { name: 'Forums', icon: EnvelopeIcon, to: '/coming-soon' },
+        { name: 'Blog', icon: CodeBracketIcon, to: '/coming-soon' },
+        { name: 'Support', icon: ShieldCheckIcon, to: '/coming-soon' }
       ]
     },
     {
       title: 'Resources',
       items: [
-        { name: 'Game Guides', to: '/guides' },
-        { name: 'Tournament Rules', to: '/rules' },
-        { name: 'API Docs', to: '/api' },
-        { name: 'Status', to: '/status' }
+        { name: 'Game Guides', to: '/coming-soon' },
+        { name: 'Tournament Rules', to: '/coming-soon' },
+        { name: 'API Docs', to: '/coming-soon' },
+        { name: 'Status', to: '/coming-soon' }
       ]
     },
     {
@@ -110,15 +110,15 @@ export const Footer = () => {
           >
             <img src="/logo.svg" alt="Logo" className="w-8 h-8" />
             <span className="text-white font-semibold group-hover:text-blue-500 transition-colors">
-              TourneyWatch
+              WarZone Quest
             </span>
           </motion.div>
           
           <div className="flex items-center gap-6">
             {[
               { icon: ChatBubbleLeftIcon, href: 'https://discord.com', label: 'Discord' },
-              { icon: EnvelopeIcon, href: 'https://twitter.com', label: 'Twitter' },
-              { icon: CodeBracketIcon, href: 'https://github.com', label: 'GitHub' }
+              { icon: EnvelopeIcon, href: 'https://x.com', label: 'X' },
+              { icon: CodeBracketIcon, href: 'https://github.com/Warzone-Quest', label: 'GitHub' }
             ].map((social, index) => (
               <motion.a
                 key={social.label}
@@ -137,7 +137,7 @@ export const Footer = () => {
             ))}
           </div>
           
-          <p className="text-sm">© 2024 TourneyWatch. All rights reserved.</p>
+          <p className="text-sm">© 2024 WarZone Quest. All rights reserved.</p>
         </motion.div>
       </div>
     </footer>

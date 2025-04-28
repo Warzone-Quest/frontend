@@ -20,10 +20,10 @@ export const Header = () => {
   }, []);
 
   const navItems = [
-    { name: 'Tournaments', icon: TrophyIcon, to: '/tournaments' },
-    { name: 'Leaderboards', icon: ChartBarIcon, to: '/leaderboards' },
-    { name: 'Teams', icon: UserGroupIcon, to: '/teams' },
-    { name: 'Events', icon: RocketLaunchIcon, to: '/events' }
+    { name: 'Tournaments', icon: TrophyIcon, to: '/dashboard/tournaments' },
+    { name: 'Leaderboards', icon: ChartBarIcon, to: '/dashboard/leaderboards' },
+    { name: 'Teams', icon: UserGroupIcon, to: '/dashboard/teams' },
+    { name: 'Events', icon: RocketLaunchIcon, to: '/dashboard/events' }
   ];
 
   return (
@@ -45,7 +45,7 @@ export const Header = () => {
               transition={{ duration: 0.5 }}
             />
             <span className="text-xl font-bold text-white group-hover:text-blue-500 transition-colors">
-              TourneyWatch
+              WarZone Quest
             </span>
           </Link>
 
@@ -69,7 +69,7 @@ export const Header = () => {
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link to="/sign-in">
+            <Link to="/auth/login">
               <motion.button
                 whileHover={{ scale: 1.05, x: 5 }}
                 whileTap={{ scale: 0.95 }}
@@ -78,7 +78,7 @@ export const Header = () => {
                 Sign In
               </motion.button>
             </Link>
-            <Link to="/sign-up">
+            <Link to="/auth/signup">
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
